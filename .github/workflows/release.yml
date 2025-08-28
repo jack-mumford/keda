@@ -1,0 +1,30 @@
+name: Release
+on:
+  push:
+    tags:
+      - "v*" # Triggers on pushes to tags starting with "v"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to create GitHub Releases
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required for GoReleaser to generate changelog
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22" # Or your desired Go version
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          version: latest # Or a specific GoReleaser version like 'v2.0.0'
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Automatically provided by GitHub Actions
